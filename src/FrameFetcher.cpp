@@ -19,8 +19,7 @@ GstFlowReturn new_sample(GstAppSink *appsink, gpointer data)
     GstCaps *caps = gst_sample_get_caps(sample);
     GstBuffer *buffer = gst_sample_get_buffer(sample);
     GstStructure *structure = gst_caps_get_structure(caps, 0);
-    const int width = g_value_get_int(gst_structure_get_value(structure, "width"));
-    const int height = g_value_get_int(gst_structure_get_value(structure, "height"));
+    auto name = gst_structure_get_name(structure);
 
     if (!(framecount % 30))
     {
@@ -35,8 +34,16 @@ GstFlowReturn new_sample(GstAppSink *appsink, gpointer data)
 
     GstMapInfo map;
     gst_buffer_map(buffer, &map, GST_MAP_READ);
-
-    emit myFrameFetcher->frameAvailable(QImage(map.data, width, height, QImage::Format_RGB888));
+    if (name == "image/jpeg")
+    {
+        emit myFrameFetcher->rawAvailable(name, QByteArray::fromRawData((char *)map.data, map.size));
+    }
+    else
+    {
+        const int width = g_value_get_int(gst_structure_get_value(structure, "width"));
+        const int height = g_value_get_int(gst_structure_get_value(structure, "height"));
+        emit myFrameFetcher->imageAvailable(QImage(map.data, width, height, QImage::Format_RGB888));
+    }
 
     gst_buffer_unmap(buffer, &map);
     gst_sample_unref(sample);

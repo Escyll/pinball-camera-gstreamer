@@ -14,7 +14,8 @@ public:
     ~FrameFetcher();
 
 signals:
-    void frameAvailable(const QImage &image);
+    void rawAvailable(const QString &type, const QByteArray &data);
+    void imageAvailable(const QImage &image);
 
 private:
     GstElement *m_pipeline;

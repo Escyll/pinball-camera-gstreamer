@@ -34,7 +34,7 @@ GstFlowReturn new_sample(GstAppSink *appsink, gpointer data)
 
     GstMapInfo map;
     gst_buffer_map(buffer, &map, GST_MAP_READ);
-    if (name == "image/jpeg")
+    if (name == std::string("image/jpeg"))
     {
         emit myFrameFetcher->rawAvailable(name, QByteArray::fromRawData((char *)map.data, map.size));
     }
